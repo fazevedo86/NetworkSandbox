@@ -32,12 +32,12 @@ public class UnicastDatagramServer extends Thread {
 			// Prepare the structure of the packet to be received
 	        receivedPacket = new DatagramPacket(inputBuffer, inputBuffer.length);
 	        
-	        // DEBUG
-	        System.out.println("Received a packet containing: " + new String(receivedPacket.getData(),0,receivedPacket.getData().length));
-	        
 	        try {
 	        	// receive the packet
 				this.socket.receive(receivedPacket);
+				
+				// DEBUG
+		        System.out.println("Received a packet containing: " + new String(receivedPacket.getData(),0,receivedPacket.getLength()));
 				
 				// Extract the source IP and port
 	            clientIP = receivedPacket.getAddress();
@@ -46,6 +46,9 @@ public class UnicastDatagramServer extends Thread {
 	            // Prepare the packet to be sent
 	            outputBuffer = "I heard you loud and clear!".getBytes();
 	            responsePacket = new DatagramPacket(outputBuffer, outputBuffer.length, clientIP, clientPort);
+	            
+	            // DEBUG
+		        System.out.println("Sent a packet containing: " + new String(outputBuffer,0,outputBuffer.length));
 	            
 	            // Packet away!
 	            socket.send(responsePacket);

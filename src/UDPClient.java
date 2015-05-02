@@ -19,12 +19,8 @@ public class UDPClient {
 			UnicastDatagramClient client = new UnicastDatagramClient(targetHost, targetPort);
 			client.sendMessage("You never listen to me D:");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.out.println(e.getStackTrace());
 		}
 		
 	}
-	
-	
-
 }
