@@ -1,9 +1,4 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import unicast.UnicastDatagramClient;
 import utils.ui;
@@ -22,7 +17,8 @@ public class UDPClient {
 
 		try {
 			UnicastDatagramClient client = new UnicastDatagramClient(targetHost, targetPort);
-		} catch (SocketException | UnknownHostException e) {
+			client.sendMessage("You never listen to me D:");
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e.getStackTrace());
 		}

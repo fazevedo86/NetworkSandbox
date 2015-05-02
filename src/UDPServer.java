@@ -1,4 +1,3 @@
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -13,11 +12,11 @@ public class UDPServer {
 	 */
 	public static void main(String[] args) {
 		int srvPort = -1;
-		InetAddress srvAddress = null;
+		String srvAddress = null;
 		
 		try {
 			System.out.println("Which IP shall we bind to?");
-			srvAddress = InetAddress.getByName(ui.readInput());
+			srvAddress = ui.readInput();
 			
 			System.out.println("And on what port?");
 			srvPort = new Integer(ui.readInput());

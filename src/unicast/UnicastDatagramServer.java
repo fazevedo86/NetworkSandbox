@@ -5,14 +5,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class UnicastDatagramServer extends Thread {
 
 	protected DatagramSocket socket = null;
 	
-	public UnicastDatagramServer(InetAddress localAddress, int localPort) throws SocketException {
-		this.socket = new DatagramSocket(localPort, localAddress);
-		System.out.println("Started server on " + localAddress + ":6969");
+	public UnicastDatagramServer(String localAddress, int localPort) throws SocketException, UnknownHostException {
+		this.socket = new DatagramSocket(localPort, InetAddress.getByName(localAddress));
+		System.out.println("Started server on " + localAddress + ":" + localPort);
 	}
 	
 	public void run() {
@@ -32,7 +33,7 @@ public class UnicastDatagramServer extends Thread {
 	        receivedPacket = new DatagramPacket(inputBuffer, inputBuffer.length);
 	        
 	        // DEBUG
-	        System.out.println("Received a packet containing: " + new String(receivedPacket.getData(),0,receivedPacket.getLength()));
+	        System.out.println("Received a packet containing: " + new String(receivedPacket.getData(),0,receivedPacket.getData().length));
 	        
 	        try {
 	        	// receive the packet
