@@ -6,6 +6,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import unicast.UnicastDatagramClient;
+import utils.ui;
 
 
 public class UDPClient {
@@ -15,9 +16,9 @@ public class UDPClient {
 	 */
 	public static void main(String[] args) {
 		System.out.println("Which host shall we connect to?");
-		String targetHost = UDPClient.readInput();
+		String targetHost = ui.readInput();
 		System.out.println("And on what port?");
-		int targetPort = new Integer(UDPClient.readInput());
+		int targetPort = new Integer(ui.readInput());
 
 		try {
 			UnicastDatagramClient client = new UnicastDatagramClient(targetHost, targetPort);
@@ -28,19 +29,6 @@ public class UDPClient {
 		
 	}
 	
-	public static String readInput()
-	{
-		BufferedReader inputBuffer = new BufferedReader(new InputStreamReader(System.in));
-		String inputText = null;
-		
-		try {
-			inputText = inputBuffer.readLine();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return inputText;
-	}
+	
 
 }
