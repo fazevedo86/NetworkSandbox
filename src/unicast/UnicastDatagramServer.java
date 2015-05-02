@@ -12,6 +12,7 @@ public class UnicastDatagramServer extends Thread {
 	
 	public UnicastDatagramServer(InetAddress localAddress, int localPort) throws SocketException {
 		this.socket = new DatagramSocket(localPort, localAddress);
+		System.out.println("Started server on " + localAddress + ":6969");
 	}
 	
 	public void run() {
@@ -31,7 +32,7 @@ public class UnicastDatagramServer extends Thread {
 	        receivedPacket = new DatagramPacket(inputBuffer, inputBuffer.length);
 	        
 	        // DEBUG
-	        System.out.println("Received a packet containing: " + receivedPacket.getData().toString());
+	        System.out.println("Received a packet containing: " + new String(receivedPacket.getData(),0,receivedPacket.getLength()));
 	        
 	        try {
 	        	// receive the packet
@@ -49,7 +50,7 @@ public class UnicastDatagramServer extends Thread {
 	            socket.send(responsePacket);
 	            
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println(e.getStackTrace());
 			}
 		}
 	}

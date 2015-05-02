@@ -25,14 +25,8 @@ public class UDPServer {
 			UnicastDatagramServer server = new UnicastDatagramServer(srvAddress, srvPort);
 			server.start();
 			
-			System.out.println("Started server on " + InetAddress.getLocalHost() + ":6969");
-			
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (SocketException | UnknownHostException e) {
+			System.out.println(e.getStackTrace());
 		}
 		
 	}

@@ -24,7 +24,7 @@ public class UDPClient {
 			UnicastDatagramClient client = new UnicastDatagramClient(targetHost, targetPort);
 		} catch (SocketException | UnknownHostException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.getStackTrace());
 		}
 		
 	}
