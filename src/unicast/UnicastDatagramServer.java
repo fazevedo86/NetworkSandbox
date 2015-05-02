@@ -9,14 +9,45 @@ import java.net.UnknownHostException;
 
 public class UnicastDatagramServer extends Thread {
 
-	protected DatagramSocket socket = null;
+	protected DatagramSocket srvSocket = null;
+	protected String srvAddress = null;
+	protected int srvPort = -1;
 	
 	public UnicastDatagramServer(String localAddress, int localPort) throws SocketException, UnknownHostException {
-		this.socket = new DatagramSocket(localPort, InetAddress.getByName(localAddress));
-		System.out.println("Started server on " + localAddress + ":" + localPort);
+		this(localPort);
+		this.srvAddress = localAddress;
+	}
+	
+	public UnicastDatagramServer(int localPort) throws SocketException, UnknownHostException {
+		this.srvPort = localPort;
+	}
+	
+	public boolean startServer() {
+		if(this.srvPort < 1024) {
+			return false;
+		} else {
+			// Create the socket
+			try {
+				if(this.srvAddress != null) {
+					this.srvSocket = new DatagramSocket(this.srvPort, InetAddress.getByName(this.srvAddress));
+					System.out.println("Started server on " + this.srvAddress + ":" + this.srvPort);
+				} else {
+					this.srvSocket = new DatagramSocket(this.srvPort);
+					System.out.println("Started server on all address on port" + this.srvPort);
+				}
+			} catch (SocketException | UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return true;
 	}
 	
 	public void run() {
+		
+		if(!this.startServer()){
+			return;
+		}
 		
 		while(true){
 			DatagramPacket responsePacket;
@@ -34,7 +65,7 @@ public class UnicastDatagramServer extends Thread {
 	        
 	        try {
 	        	// receive the packet
-				this.socket.receive(receivedPacket);
+				this.srvSocket.receive(receivedPacket);
 				
 				// DEBUG
 		        System.out.println("Received a packet containing: " + new String(receivedPacket.getData(),0,receivedPacket.getLength()));
@@ -51,7 +82,7 @@ public class UnicastDatagramServer extends Thread {
 		        System.out.println("Sent a packet containing: " + new String(outputBuffer,0,outputBuffer.length));
 	            
 	            // Packet away!
-	            socket.send(responsePacket);
+	            srvSocket.send(responsePacket);
 	            
 			} catch (IOException e) {
 				System.out.println(e.getStackTrace());

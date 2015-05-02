@@ -17,7 +17,13 @@ public class UDPClient {
 
 		try {
 			UnicastDatagramClient client = new UnicastDatagramClient(targetHost, targetPort);
-			client.sendMessage("You never listen to me D:");
+			
+			System.out.println("Connection established...");
+			
+			while(true){
+				System.out.println(client.sendMessage(ui.readInput()));
+			}
+
 		} catch (IOException e) {
 			System.out.println(e.getStackTrace());
 		}
