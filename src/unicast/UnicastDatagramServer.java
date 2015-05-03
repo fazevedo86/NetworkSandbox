@@ -6,12 +6,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class UnicastDatagramServer extends Thread {
 
 	protected DatagramSocket srvSocket = null;
 	protected String srvAddress = null;
 	protected int srvPort = -1;
+	protected AtomicBoolean srvRunning;
 	
 	public UnicastDatagramServer(String localAddress, int localPort) throws SocketException, UnknownHostException {
 		this(localPort);
@@ -19,43 +21,56 @@ public class UnicastDatagramServer extends Thread {
 	}
 	
 	public UnicastDatagramServer(int localPort) throws SocketException, UnknownHostException {
-		this.srvPort = localPort;
+		if(localPort <= 1024) {
+			throw new SocketException("Cannot use ports below 1024");
+		} else {
+			this.srvPort = localPort;
+			this.srvRunning.set(false);
+		}
 	}
 	
-	public boolean startServer() {
-		if(this.srvPort < 1024) {
-			return false;
-		} else {
+	public synchronized boolean startServer() {
+		if(this.srvPort > 1024 && this.srvRunning.compareAndSet(false, true)) {
 			// Create the socket
 			try {
 				if(this.srvAddress != null) {
-					this.srvSocket = new DatagramSocket(this.srvPort, InetAddress.getByName(this.srvAddress));
+					System.out.println("Started server on " + this.srvSocket.getInetAddress() + ":" + this.srvSocket.getPort());
 					System.out.println("Started server on " + this.srvAddress + ":" + this.srvPort);
 				} else {
 					this.srvSocket = new DatagramSocket(this.srvPort);
 					System.out.println("Started server on all address on port" + this.srvPort);
 				}
-			} catch (SocketException | UnknownHostException e) {
+			} catch (SocketException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		return true;
+		
+		return this.srvRunning.get();
+	}
+	
+	public synchronized boolean stopServer() {
+		return this.srvRunning.compareAndSet(true, false);
+	}
+	
+	public synchronized boolean isServerRunning() {
+		return this.srvRunning.get();
 	}
 	
 	public void run() {
 		
-		if(!this.startServer()){
+		if(!this.isServerRunning() || !this.startServer()){
 			return;
 		}
 		
-		while(true){
-			DatagramPacket responsePacket;
-			DatagramPacket receivedPacket;
-			InetAddress clientIP;
-			int clientPort;
-			byte[] inputBuffer;
-			byte[] outputBuffer;
+		DatagramPacket responsePacket;
+		DatagramPacket receivedPacket;
+		InetAddress clientIP;
+		int clientPort;
+		byte[] inputBuffer;
+		byte[] outputBuffer;
+		
+		while(this.isServerRunning()){
 			
 			// MTU for ethernet = 1500, therefore the buffer must be at least that
 			inputBuffer = new byte[1500];
@@ -88,5 +103,6 @@ public class UnicastDatagramServer extends Thread {
 				System.out.println(e.getStackTrace());
 			}
 		}
+		this.srvSocket.close();
 	}
 }

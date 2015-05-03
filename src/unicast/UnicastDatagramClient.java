@@ -9,11 +9,11 @@ import java.net.UnknownHostException;
 
 public class UnicastDatagramClient {
 
-	InetAddress dstIP = null;
-	int dstPort = -1;
-	DatagramSocket socket = null;
-	DatagramPacket responsePacket = null;
-	byte[] outputBuffer, inputBuffer = null;
+	protected InetAddress dstIP = null;
+	protected int dstPort = -1;
+	protected DatagramSocket socket = null;
+	protected DatagramPacket responsePacket = null;
+	protected byte[] outputBuffer, inputBuffer = null;
 	
 	public UnicastDatagramClient(String IP, int Port) throws SocketException, UnknownHostException {
 		this.socket = new DatagramSocket();
@@ -22,7 +22,7 @@ public class UnicastDatagramClient {
 		this.inputBuffer = new byte[1500];
 	}
 	
-	public String sendMessage(String msg) throws IOException{
+	public synchronized String sendMessage(String msg) throws IOException{
 		// Send the packet
 		this.outputBuffer = msg.getBytes();
 		this.socket.send(new DatagramPacket(this.outputBuffer, this.outputBuffer.length, this.dstIP, this.dstPort));
