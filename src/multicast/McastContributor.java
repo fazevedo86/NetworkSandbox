@@ -9,20 +9,20 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Contributor extends Thread {
+public class McastContributor extends Thread {
 
 	protected InetAddress mcastGroup = null;
 	protected int dstPort = -1;
 	protected DatagramSocket srvSocket = null;
-	protected AtomicBoolean srvRunning;
+	protected AtomicBoolean srvRunning = null;
 	
-	public Contributor(String mcastGroupIP, int remotePort) throws UnknownHostException {
+	public McastContributor(String mcastGroupIP, int remotePort) throws UnknownHostException {
 		if(remotePort < 1){
 			throw new UnknownHostException(mcastGroupIP + ":" + remotePort);
 		} else {
 			this.mcastGroup = InetAddress.getByName(mcastGroupIP);
 			this.dstPort = remotePort;
-			this.srvRunning.set(false);
+			this.srvRunning = new AtomicBoolean(false);
 		}
 	}
 	
@@ -31,7 +31,7 @@ public class Contributor extends Thread {
 			// Create the socket
 			try {
 				this.srvSocket = new DatagramSocket();
-				System.out.println("Started server on " + this.srvSocket.getInetAddress() + ":" + this.srvSocket.getPort());
+				System.out.println("Started contributing to multicast group " + this.mcastGroup.getHostAddress() + ":" + this.dstPort);
 			} catch (SocketException e) {
 				System.out.println(e.getMessage());
 			}
@@ -49,7 +49,7 @@ public class Contributor extends Thread {
 	
 	@Override
 	public void run() {
-		if(!this.isServerRunning() || !this.startServer()){
+		if(!this.isServerRunning() && !this.startServer()){
 			return;
 		}
 		

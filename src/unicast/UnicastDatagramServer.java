@@ -11,13 +11,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class UnicastDatagramServer extends Thread {
 
 	protected DatagramSocket srvSocket = null;
-	protected String srvAddress = null;
+	protected InetAddress srvAddress = null;
 	protected int srvPort = -1;
-	protected AtomicBoolean srvRunning;
+	protected AtomicBoolean srvRunning = null;
 	
 	public UnicastDatagramServer(String localAddress, int localPort) throws SocketException, UnknownHostException {
 		this(localPort);
-		this.srvAddress = localAddress;
+		this.srvAddress = InetAddress.getByName(localAddress);
 	}
 	
 	public UnicastDatagramServer(int localPort) throws SocketException, UnknownHostException {
@@ -25,7 +25,7 @@ public class UnicastDatagramServer extends Thread {
 			throw new SocketException("Cannot use ports below 1024");
 		} else {
 			this.srvPort = localPort;
-			this.srvRunning.set(false);
+			this.srvRunning = new AtomicBoolean(false);
 		}
 	}
 	
@@ -34,15 +34,14 @@ public class UnicastDatagramServer extends Thread {
 			// Create the socket
 			try {
 				if(this.srvAddress != null) {
+					this.srvSocket = new DatagramSocket(this.srvPort,this.srvAddress);
 					System.out.println("Started server on " + this.srvSocket.getInetAddress() + ":" + this.srvSocket.getPort());
-					System.out.println("Started server on " + this.srvAddress + ":" + this.srvPort);
 				} else {
 					this.srvSocket = new DatagramSocket(this.srvPort);
-					System.out.println("Started server on all address on port" + this.srvPort);
+					System.out.println("Started server on all address on port" + this.srvSocket.getPort());
 				}
 			} catch (SocketException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 		}
 		
@@ -57,9 +56,10 @@ public class UnicastDatagramServer extends Thread {
 		return this.srvRunning.get();
 	}
 	
+	@Override
 	public void run() {
 		
-		if(!this.isServerRunning() || !this.startServer()){
+		if(!this.isServerRunning() && !this.startServer()){
 			return;
 		}
 		
