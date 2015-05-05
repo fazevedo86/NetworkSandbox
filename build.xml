@@ -1,0 +1,32 @@
+<project name="NetworkSandbox" basedir="." default="main">
+
+    <property name="src.dir"    value="src"/>
+    <property name="build.dir"  value="bin"/>
+    <property name="main-class" value="NetworkSandbox"/>
+    <property name="jar.name"   value="NetworkSandbox.jar" />
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="build">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}"/>
+    </target>
+
+    <target name="jar" depends="build">
+        <jar destfile="${jar.name}" basedir="${build.dir}">
+            <fileset dir="${build.dir}">
+                <include name="**/*.*"/>
+            </fileset>
+            <manifest>
+                <attribute name="Main-Class" value="NetworkSandbox"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+        <java jar="${jar.name}" fork="true"/>
+    </target>
+
+</project>
