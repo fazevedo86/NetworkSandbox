@@ -56,7 +56,7 @@ public class McastConsumer extends Thread {
 			this.rcvPacket = new DatagramPacket(this.inputBuffer, this.inputBuffer.length);
 			try {
 				this.srvMcastSocket.receive(this.rcvPacket);
-				System.out.println("Got a new packet: " + new String(this.rcvPacket.getData(),0,this.rcvPacket.getLength()));
+				System.out.println("Got a new packet from " + this.rcvPacket.getAddress() + ": " + new String(this.rcvPacket.getData(),0,this.rcvPacket.getLength()));
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
