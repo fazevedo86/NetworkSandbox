@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -13,7 +14,7 @@ public class McastContributor extends Thread {
 
 	protected InetAddress mcastGroup = null;
 	protected int dstPort = -1;
-	protected DatagramSocket srvSocket = null;
+	protected MulticastSocket srvSocket = null;
 	protected AtomicBoolean srvRunning = null;
 	
 	public McastContributor(String mcastGroupIP, int remotePort) throws UnknownHostException {
@@ -30,9 +31,10 @@ public class McastContributor extends Thread {
 		if(this.mcastGroup != null && this.srvRunning.compareAndSet(false, true)) {
 			// Create the socket
 			try {
-				this.srvSocket = new DatagramSocket();
+				this.srvSocket = new MulticastSocket();
+				this.srvSocket.setTimeToLive(2);
 				System.out.println("Started contributing to multicast group " + this.mcastGroup.getHostAddress() + ":" + this.dstPort);
-			} catch (SocketException e) {
+			} catch ( IOException e) {
 				System.out.println(e.getMessage());
 			}
 		}
