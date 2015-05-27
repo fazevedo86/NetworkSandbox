@@ -2,10 +2,8 @@ package multicast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,11 +26,11 @@ public class McastContributor extends Thread {
 	}
 	
 	public synchronized boolean startServer() {
-		if(this.mcastGroup != null && this.srvRunning.compareAndSet(false, true)) {
+		if(this.mcastGroup != null && this.mcastGroup.isMulticastAddress() && this.srvRunning.compareAndSet(false, true)) {
 			// Create the socket
 			try {
 				this.srvSocket = new MulticastSocket();
-				this.srvSocket.setTimeToLive(2);
+				this.srvSocket.setTimeToLive(255); // broadest scope
 				System.out.println("Started contributing to multicast group " + this.mcastGroup.getHostAddress() + ":" + this.dstPort);
 			} catch ( IOException e) {
 				System.out.println(e.getMessage());
