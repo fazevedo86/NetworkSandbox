@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import utils.ui;
+
 public class McastContributor extends Thread {
 
 	protected InetAddress mcastGroup = null;
@@ -55,10 +57,14 @@ public class McastContributor extends Thread {
 		
 		DatagramPacket mcastPacket;
 		byte[] outputBuffer;
+		String msgContent;
 		
 		while(this.isServerRunning()){
 			// Packet content
-			outputBuffer = new Date().toString().getBytes();
+			//outputBuffer = new Date().toString().getBytes();
+			System.out.print("Text to be sent to the mcast group: ");
+			msgContent = ui.readInput();
+			outputBuffer = msgContent.getBytes();
 			
 			// Create the packet
 			mcastPacket = new DatagramPacket(outputBuffer, outputBuffer.length, this.mcastGroup, this.dstPort);
@@ -66,6 +72,7 @@ public class McastContributor extends Thread {
 			// Sent the packet
 			try {
 				this.srvSocket.send(mcastPacket);
+				System.out.println("Sent message: " + msgContent);
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
