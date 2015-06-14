@@ -78,11 +78,11 @@ public class McastContributor extends Thread {
 			}
 			
 			// Wait for it...
-			try {
-				sleep(5000);
-			} catch (InterruptedException e) {
-				System.out.println(e.getMessage());
-			}
+//			try {
+//				sleep(5000);
+//			} catch (InterruptedException e) {
+//				System.out.println(e.getMessage());
+//			}
 		}
 		
 		this.srvSocket.close();
