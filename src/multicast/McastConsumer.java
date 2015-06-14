@@ -9,6 +9,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class McastConsumer extends Thread {
 
+	private static final String LOCAL_MCAST_GROUP = "224.0.0.1";
+	
+	protected InetAddress localmcastGroup = null;
 	protected InetAddress mcastGroup = null;
 	protected MulticastSocket srvMcastSocket = null;
 	protected int dstPort = -1;
@@ -17,6 +20,7 @@ public class McastConsumer extends Thread {
 	protected AtomicBoolean consumerRunning;
 	
 	public McastConsumer(String mcastGroupIP, int Port) throws UnknownHostException {
+		this.localmcastGroup = InetAddress.getByName(LOCAL_MCAST_GROUP);
 		this.mcastGroup = InetAddress.getByName(mcastGroupIP);
 		this.dstPort = Port;
 		this.consumerRunning = new AtomicBoolean(false);
@@ -27,6 +31,7 @@ public class McastConsumer extends Thread {
 			try {
 				this.srvMcastSocket = new MulticastSocket(this.dstPort);
 				this.srvMcastSocket.joinGroup(this.mcastGroup);
+				this.srvMcastSocket.joinGroup(this.localmcastGroup);
 				System.out.println("Joined group " + this.mcastGroup.getHostAddress() + " on port " + this.srvMcastSocket.getLocalPort());
 			} catch (IOException e) {
 				System.out.println(e.getMessage());

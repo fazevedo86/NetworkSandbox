@@ -12,6 +12,9 @@ import utils.ui;
 
 public class McastContributor extends Thread {
 
+	private static final String LOCAL_MCAST_GROUP = "224.0.0.1";
+	
+	protected InetAddress localmcastGroup = null;
 	protected InetAddress mcastGroup = null;
 	protected int dstPort = -1;
 	protected MulticastSocket srvSocket = null;
@@ -21,6 +24,7 @@ public class McastContributor extends Thread {
 		if(remotePort < 1){
 			throw new UnknownHostException(mcastGroupIP + ":" + remotePort);
 		} else {
+			this.localmcastGroup = InetAddress.getByName(LOCAL_MCAST_GROUP);
 			this.mcastGroup = InetAddress.getByName(mcastGroupIP);
 			this.dstPort = remotePort;
 			this.srvRunning = new AtomicBoolean(false);
@@ -67,11 +71,15 @@ public class McastContributor extends Thread {
 			outputBuffer = msgContent.getBytes();
 			
 			// Create the packet
-			mcastPacket = new DatagramPacket(outputBuffer, outputBuffer.length, this.mcastGroup, this.dstPort);
+			mcastPacket = new DatagramPacket(outputBuffer, outputBuffer.length, this.localmcastGroup, this.dstPort);
 			
-			// Sent the packet
+			// Send the packet
 			try {
 				this.srvSocket.send(mcastPacket);
+				
+				mcastPacket.setAddress(this.mcastGroup);
+				this.srvSocket.send(mcastPacket);
+				
 				System.out.println("Sent message: " + msgContent);
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
